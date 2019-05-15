@@ -3,7 +3,7 @@
 
 ### JupyterNotebook ###
 .ipynb_checkpoints
-.ipynb
+*.ipynb
 */.ipynb_checkpoints/*
 
 # Remove previous ipynb_checkpoints

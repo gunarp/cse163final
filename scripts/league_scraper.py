@@ -49,7 +49,7 @@ def main():
         start_page = n
         num_pages_left -= (n-1)
 
-        g1_info.to_csv(os.getcwd() + '\\data' + tier_name + '.csv', mode='a',
+        g1_info.to_csv(os.getcwd() + '\\data\\' + tier_name + '.csv', mode='a',
                        header=False, index=False)
 
         # print('sleeping, ' + str(num_pages_left) +
