@@ -18,7 +18,7 @@ def gather_ranks(acct, api_key, league, division, http, loc):
     print('Gathering ids from league')
     tier = 'https://na1.api.riotgames.com/lol/league/v4/entries/' + \
            'RANKED_SOLO_5x5/' + league + '/' + division + '?page='
-    dest_file = loc + '\\data\\' + league + division + '_ids_' + acct + '.csv'
+    dest_file = '../data/' + league + division + '_ids_' + acct + '.csv'
     all_sums = pd.Series()
 
     pages_left = True
@@ -49,7 +49,7 @@ def gather_sums(acct, api_key, league, division, http, loc):
     """
     print('Gathering Player Information')
     search = 'https://na1.api.riotgames.com/lol/summoner/v4/summoners/'
-    target = loc + '\\data\\' + league + division + '_IDS_' + acct + '.csv'
+    target = '../data/' + league + division + '_IDS_' + acct + '.csv'
     data = pd.read_csv(target, squeeze=True, header=None)
 
     def sum_search(sumid):
@@ -64,7 +64,7 @@ def gather_sums(acct, api_key, league, division, http, loc):
         return pd.read_json(r.data, typ='series')
 
     sums_info = data.apply(sum_search)
-    sums_info.to_csv(loc + '\\data\\' + league + division +
+    sums_info.to_csv('../data/' + league + division +
                      '_SUMS_' + acct + '.csv', index=False)
     print('Done gathering player info!')
 
@@ -74,7 +74,7 @@ def gather_masteries(acct, api_key, league, division, http, loc):
     Gathers player champion mastery data. Grabs top five champions
     """
     print('Gathering Champion Masteries')
-    target = loc + '\\data\\' + league + division + '_SUMS_' + acct + '.csv'
+    target = '../data/' + league + division + '_SUMS_' + acct + '.csv'
     search = 'https://na1.api.riotgames.com/lol/champion-mastery/v4/' + \
              'champion-masteries/by-summoner/'
     summoners = pd.read_csv(target)
@@ -94,7 +94,7 @@ def gather_masteries(acct, api_key, league, division, http, loc):
                 result[i] = np.nan
 
     summoners[mask] = summoners['summonerId'].apply(masteries_search)
-    summoners.to_csv(loc + '\\data\\' + league + division +
+    summoners.to_csv('../data/' + league + division +
                      '_MASTERIES_' + acct + '.csv')
     print('Masteries all found!')
 
@@ -103,7 +103,7 @@ def gather_matches(acct, api_key, league, division, http, loc):
     print('Gathering Match Information')
     search = 'https://na1.api.riotgames.com' + \
              '/lol/match/v4/matchlists/by-account/'
-    target = loc + '\\data\\' + league + division + \
+    target = '../data/' + league + division + \
         '_MASTERIES_' + acct + '.csv'
     summoners = pd.read_csv(target)
     mask = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8']
@@ -120,7 +120,7 @@ def gather_matches(acct, api_key, league, division, http, loc):
         return m_list
 
     summoners[mask] = summoners['accountId'].apply(match_search)
-    summoners.to_csv(loc + '\\data\\' + league + division +
+    summoners.to_csv('../data/' + league + division +
                      '_MATCHES_' + acct + '.csv')
     print('Match list gathered! Data saved.',
           'Filling in information about matches...',
@@ -148,7 +148,7 @@ def gather_matches(acct, api_key, league, division, http, loc):
     match_details.columns += '_info'
     summoners = summoners.merge(match_details,
                                 left_index=True, right_index=True)
-    summoners.to_csv(loc + '\\data\\' + league + division +
+    summoners.to_csv('../data/' + league + division +
                      '_MATCHES_' + acct + '.csv')
     print('Match Data complete!')
 
