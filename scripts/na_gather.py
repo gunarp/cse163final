@@ -93,9 +93,11 @@ def gather_masteries(acct, api_key, league, division, http, loc):
             for i in range(len(result), 5):
                 result[i] = np.nan
 
-    summoners[mask] = summoners['summonerId'].apply(masteries_search)
+    m = summoners['id'].apply(masteries_search)
+    summoners.assign(c1=m[0], c2=m[1], c3=m[2],
+                     c4=m[3], c5=m[4])
     summoners.to_csv('../data/' + league + division +
-                     '_MASTERIES_' + acct + '.csv')
+                     '_MASTERIES_' + acct + '.csv', index=False)
     print('Masteries all found!')
 
 
@@ -119,7 +121,11 @@ def gather_matches(acct, api_key, league, division, http, loc):
         time.sleep(wait_time)
         return m_list
 
-    summoners[mask] = summoners['accountId'].apply(match_search)
+    matches = summoners['accountId'].apply(match_search)
+    summoners.assign(m1=matches[0], m2=matches[1],
+                     m3=matches[2], m4=matches[3],
+                     m5=matches[4], m6=matches[5],
+                     m7=matches[6], m8=matches[7])
     summoners.to_csv('../data/' + league + division +
                      '_MATCHES_' + acct + '.csv')
     print('Match list gathered! Data saved.',
@@ -149,7 +155,7 @@ def gather_matches(acct, api_key, league, division, http, loc):
     summoners = summoners.merge(match_details,
                                 left_index=True, right_index=True)
     summoners.to_csv('../data/' + league + division +
-                     '_MATCHES_' + acct + '.csv')
+                     '_MATCHES_' + acct + '.csv', index=False)
     print('Match Data complete!')
 
 
@@ -164,9 +170,9 @@ def main():
     loc = os.getcwd()
 
     # gather_ranks(acct, api_key, league, division, http, loc)
-    gather_sums(acct, api_key, league, division, http, loc)
+    # gather_sums(acct, api_key, league, division, http, loc)
     # gather_masteries(acct, api_key, league, division, http, loc)
-    # gather_matches(acct, api_key, league, division, http, loc)
+    gather_matches(acct, api_key, league, division, http, loc)
 
 
 if __name__ == '__main__':
