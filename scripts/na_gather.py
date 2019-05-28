@@ -87,7 +87,7 @@ def gather_masteries(acct, api_key, league, division, http, loc):
                          headers={'X-Riot-Token': api_key})
         print('Found masteries for', sumid)
         time.sleep(wait_time)
-        result = pd.read_json(r.data, typ='series')[0:5]
+        result = pd.read_json(r.data, typ='series')[0:5].values.tolist()
         if len(result) < 5:
             for i in range(len(result), 5):
                 result[i] = np.nan
@@ -141,7 +141,8 @@ def gather_matches(acct, api_key, league, division, http, loc):
             """
             Helper method to match_fill. Makes the requests for each match
             """
-            gameId = match['gameId'].loc[0]
+            # gameId = match['gameId'].loc[0]
+            gameId = match['gameId']
             r = http.request('GET', search + str(gameId),
                              headers={'X-Riot-Token': api_key})
             time.sleep(wait_time)
@@ -168,8 +169,8 @@ def main():
                                ca_certs=certifi.where())
     loc = os.getcwd()
 
-    gather_ranks(acct, api_key, league, division, http, loc)
-    gather_sums(acct, api_key, league, division, http, loc)
+    # gather_ranks(acct, api_key, league, division, http, loc)
+    # gather_sums(acct, api_key, league, division, http, loc)
     gather_masteries(acct, api_key, league, division, http, loc)
     gather_matches(acct, api_key, league, division, http, loc)
 
