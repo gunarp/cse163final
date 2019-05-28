@@ -87,10 +87,11 @@ def gather_masteries(acct, api_key, league, division, http, loc):
                          headers={'X-Riot-Token': api_key})
         print('Found masteries for', sumid)
         time.sleep(wait_time)
-        result = pd.read_json(r.data, typ='series')[0:5].values.tolist()
+        result = pd.read_json(r.data, typ='series')[0:5]
         if len(result) < 5:
             for i in range(len(result), 5):
                 result[i] = np.nan
+        return result
 
     m = summoners['id'].apply(masteries_search)
     summoners = summoners.assign(c1=m[0], c2=m[1], c3=m[2],
@@ -169,8 +170,8 @@ def main():
                                ca_certs=certifi.where())
     loc = os.getcwd()
 
-    # gather_ranks(acct, api_key, league, division, http, loc)
-    # gather_sums(acct, api_key, league, division, http, loc)
+    gather_ranks(acct, api_key, league, division, http, loc)
+    gather_sums(acct, api_key, league, division, http, loc)
     gather_masteries(acct, api_key, league, division, http, loc)
     gather_matches(acct, api_key, league, division, http, loc)
 
