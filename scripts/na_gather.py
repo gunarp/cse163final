@@ -83,7 +83,7 @@ def gather_masteries(acct, api_key, league, division, http, loc):
         """
         Makes requests for gather_masteries
         """
-        r = http.request('GET', search + sumid,
+        r = http.request('GET', search + str(sumid),
                          headers={'X-Riot-Token': api_key})
         print('Found masteries for', sumid)
         time.sleep(wait_time)
@@ -170,9 +170,9 @@ def main():
                                ca_certs=certifi.where())
     loc = os.getcwd()
 
-    gather_ranks(acct, api_key, league, division, http, loc)
-    gather_sums(acct, api_key, league, division, http, loc)
-    gather_masteries(acct, api_key, league, division, http, loc)
+    #gather_ranks(acct, api_key, league, division, http, loc)
+    #gather_sums(acct, api_key, league, division, http, loc)
+    #gather_masteries(acct, api_key, league, division, http, loc)
     gather_matches(acct, api_key, league, division, http, loc)
 
 
