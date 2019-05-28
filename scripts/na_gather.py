@@ -168,9 +168,9 @@ def main():
                                ca_certs=certifi.where())
     loc = os.getcwd()
 
-    # gather_ranks(acct, api_key, league, division, http, loc)
-    # gather_sums(acct, api_key, league, division, http, loc)
-    # gather_masteries(acct, api_key, league, division, http, loc)
+    gather_ranks(acct, api_key, league, division, http, loc)
+    gather_sums(acct, api_key, league, division, http, loc)
+    gather_masteries(acct, api_key, league, division, http, loc)
     gather_matches(acct, api_key, league, division, http, loc)
 
 
