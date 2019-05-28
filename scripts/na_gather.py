@@ -18,7 +18,7 @@ def gather_ranks(acct, api_key, league, division, http, loc):
     print('Gathering ids from league')
     tier = 'https://na1.api.riotgames.com/lol/league/v4/entries/' + \
            'RANKED_SOLO_5x5/' + league + '/' + division + '?page='
-    dest_file = '../data/' + league + division + '_ids_' + acct + '.csv'
+    dest_file = '../data/' + league + division + '_IDS_' + acct + '.csv'
     all_sums = pd.Series()
 
     pages_left = True
