@@ -3,10 +3,11 @@ import certifi
 import time
 import os
 import json
+import ast
 import numpy as np
 import pandas as pd
 
-wait_time = 1.2
+wait_time = 1.21
 
 
 def gather_ranks(acct, api_key, league, division, http, loc):
@@ -154,9 +155,8 @@ def fill_matches(acct, api_key, league, division, http, loc):
             """
             Helper method to match_fill. Makes the requests for each match
             """
-            # gameId = match['gameId'].loc[0]
-            gameId = match['gameId']
-            r = http.request('GET', search + str(gameId),
+            gid = ast.literal_eval(match)['gameId']
+            r = http.request('GET', search + str(gid),
                              headers={'X-Riot-Token': api_key})
             time.sleep(wait_time)
             return json.loads(r.data)
@@ -182,10 +182,10 @@ def main():
                                ca_certs=certifi.where())
     loc = os.getcwd()
 
-    gather_ranks(acct, api_key, league, division, http, loc)
-    gather_sums(acct, api_key, league, division, http, loc)
-    gather_masteries(acct, api_key, league, division, http, loc)
-    gather_matches(acct, api_key, league, division, http, loc)
+    #gather_ranks(acct, api_key, league, division, http, loc)
+    #gather_sums(acct, api_key, league, division, http, loc)
+    #gather_masteries(acct, api_key, league, division, http, loc)
+    #gather_matches(acct, api_key, league, division, http, loc)
     fill_matches(acct, api_key, league, division, http, loc)
 
 
