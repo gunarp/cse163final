@@ -4,6 +4,7 @@ import time
 import os
 import json
 import ast
+import datetime
 import numpy as np
 import pandas as pd
 
@@ -31,7 +32,7 @@ def gather_ranks(acct, api_key, league, division, http, loc):
 
         if (len(df) > 0):
             all_sums = all_sums.append(df['summonerId'], ignore_index=True)
-            print('Added page ' + str(page))
+            #print('Added page ' + str(page))
             time.sleep(wait_time)
         else:
             pages_left = False
@@ -60,7 +61,7 @@ def gather_sums(acct, api_key, league, division, http, loc):
         """
         r = http.request('GET', search + sumid,
                          headers={'X-Riot-Token': api_key})
-        print('Added summoner ' + sumid)
+        #print('Added summoner ' + sumid)
         time.sleep(wait_time)
         return pd.read_json(r.data, typ='series')
 
@@ -86,7 +87,7 @@ def gather_masteries(acct, api_key, league, division, http, loc):
         """
         r = http.request('GET', search + str(sumid),
                          headers={'X-Riot-Token': api_key})
-        print('Found masteries for', sumid)
+        #print('Found masteries for', sumid)
         time.sleep(wait_time)
         result = pd.read_json(r.data, typ='series')[0:5]
         if len(result) < 5:
@@ -120,7 +121,7 @@ def gather_matches(acct, api_key, league, division, http, loc):
         r = http.request('GET', search + acctid + '?queue=420',
                          headers={'X-Riot-Token': api_key})
         m_list = pd.read_json(r.data)[0:8]['matches']
-        print('Added matches for ' + acctid)
+        #print('Added matches for ' + acctid)
         time.sleep(wait_time)
         return m_list
 
@@ -131,9 +132,7 @@ def gather_matches(acct, api_key, league, division, http, loc):
                                  m7=matches[6], m8=matches[7])
     summoners.to_csv('../data/' + league + division +
                      '_MATCHES_' + acct + '.csv', index=False)
-    print('Match list gathered! Data saved.',
-          'Filling in information about matches...',
-          '(This will take a while)')
+    print('Match list gathered! Data saved.')
 
 
 def fill_matches(acct, api_key, league, division, http, loc):
@@ -142,7 +141,7 @@ def fill_matches(acct, api_key, league, division, http, loc):
     """
     search = 'https://na1.api.riotgames.com/lol/match/v4/matches/'
     mask = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8']
-
+    print('Filling matches!')
     target = '../data/' + league + division + \
         '_MATCHES_' + acct + '.csv'
     summoners = pd.read_csv(target)
@@ -181,13 +180,30 @@ def main():
     http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
                                ca_certs=certifi.where())
     loc = os.getcwd()
+    print('Using', acct, 'to find', league, division)
+    print()
+ 
+    print(datetime.datetime.now())
+    gather_ranks(acct, api_key, league, division, http, loc)
+    print()
 
-    #gather_ranks(acct, api_key, league, division, http, loc)
-    #gather_sums(acct, api_key, league, division, http, loc)
-    #gather_masteries(acct, api_key, league, division, http, loc)
-    #gather_matches(acct, api_key, league, division, http, loc)
+    print(datetime.datetime.now())
+    gather_sums(acct, api_key, league, division, http, loc)
+    print()
+
+    print(datetime.datetime.now())
+    gather_masteries(acct, api_key, league, division, http, loc)
+    print()
+
+    print(datetime.datetime.now())
+    gather_matches(acct, api_key, league, division, http, loc)
+    print()    
+   
+    print(datetime.datetime.now())
     fill_matches(acct, api_key, league, division, http, loc)
+    print()
 
+    print('All done!')
 
 if __name__ == '__main__':
     main()
