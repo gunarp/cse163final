@@ -89,10 +89,13 @@ def gather_masteries(acct, api_key, league, division, http, loc):
                          headers={'X-Riot-Token': api_key})
         #print('Found masteries for', sumid)
         time.sleep(wait_time)
-        result = pd.read_json(r.data, typ='series')[0:5]
-        if len(result) < 5:
-            for i in range(len(result), 5):
-                result[i] = np.nan
+        response = pd.read_json(r.data, typ='series')[0:5]
+        result = pd.Series(np.zeros(5))
+        result[:] = np.nan
+
+        for i in range(len(response)):
+            result[i] = response[i]
+
         return result
 
     m = summoners['id'].apply(masteries_search)
@@ -182,7 +185,7 @@ def main():
     loc = os.getcwd()
     print('Using', acct, 'to find', league, division)
     print()
- 
+    """ 
     print(datetime.datetime.now())
     gather_ranks(acct, api_key, league, division, http, loc)
     print()
@@ -190,7 +193,7 @@ def main():
     print(datetime.datetime.now())
     gather_sums(acct, api_key, league, division, http, loc)
     print()
-
+    """
     print(datetime.datetime.now())
     gather_masteries(acct, api_key, league, division, http, loc)
     print()
