@@ -186,7 +186,7 @@ def main():
     loc = os.getcwd()
     print('Using', acct, 'to find', league, division)
     print()
- 
+    """ 
     print(datetime.datetime.now())
     gather_ranks(acct, api_key, league, division, http, loc)
     print()
@@ -194,7 +194,7 @@ def main():
     print(datetime.datetime.now())
     gather_sums(acct, api_key, league, division, http, loc)
     print()
-    
+    """    
     print(datetime.datetime.now())
     gather_masteries(acct, api_key, league, division, http, loc)
     print()
