@@ -92,7 +92,7 @@ def gather_masteries(acct, api_key, league, division, http, loc):
         result = pd.read_json(r.data, typ='series')[0:5]
         if len(result) < 5:
             for i in range(len(result), 5):
-                result = result.append(np.nan)
+                result = result.append('no results found')
 
         return result
 
@@ -216,11 +216,11 @@ def main():
     print(datetime.datetime.now())
     gather_sums(acct, api_key, league, division, http, loc)
     print()
-    """
+    """ 
     print(datetime.datetime.now())
     gather_masteries(acct, api_key, league, division, http, loc)
     print()
-
+    
     print(datetime.datetime.now())
     gather_matches(acct, api_key, league, division, http, loc)
     print()    
@@ -233,6 +233,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
 
 
 
