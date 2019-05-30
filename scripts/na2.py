@@ -8,7 +8,7 @@ import datetime
 import numpy as np
 import pandas as pd
 
-wait_time = 1.21
+wait_time = 1.23
 
 
 def gather_ranks(acct, api_key, league, division, http, loc):
@@ -92,7 +92,7 @@ def gather_masteries(acct, api_key, league, division, http, loc):
         result = pd.read_json(r.data, typ='series')[0:5]
         if len(result) < 5:
             for i in range(len(result), 5):
-                result = result.append('no results found')
+                result = result.append(pd.Series({i: np.nan}))
 
         return result
 
@@ -127,7 +127,8 @@ def gather_matches(acct, api_key, league, division, http, loc):
         """
         r = http.request('GET', search + acctid + '?queue=420',
                          headers={'X-Riot-Token': api_key})
-        m_list = pd.read_json(r.data)[0:8]['matches']
+        m_list = pd.read_json(r.data)[0:8]
+        m_list = m_list['matches']
         #print('Added matches for ' + acctid)
         time.sleep(wait_time)
         return m_list
@@ -216,11 +217,11 @@ def main():
     print(datetime.datetime.now())
     gather_sums(acct, api_key, league, division, http, loc)
     print()
-    """ 
+ 
     print(datetime.datetime.now())
     gather_masteries(acct, api_key, league, division, http, loc)
     print()
-    
+    """    
     print(datetime.datetime.now())
     gather_matches(acct, api_key, league, division, http, loc)
     print()    
