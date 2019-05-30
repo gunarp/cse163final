@@ -170,7 +170,7 @@ def fill_matches(acct, api_key, league, division, http, loc):
     match_details.columns += '_info'
     summoners = summoners.merge(match_details,
                                 left_index=True, right_index=True)
-    summoners.to_csv('../data/' + league + division +
+    summoners.to_csv('../data/' + league + division + '_'
                      acct + '.csv', index=False)
     print('Match Data complete!')
 

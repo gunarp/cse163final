@@ -115,7 +115,7 @@ def gather_matches(acct, api_key, league, division, http, loc):
     search = 'https://na1.api.riotgames.com' + \
              '/lol/match/v4/matchlists/by-account/'
     target = '../data/' + league + division + \
-        '_MASTERIES_' + acct + '.csv'
+        '_SUMS_' + acct + '.csv'
     summoners = pd.read_csv(target)
 
     def match_search(acctid):
@@ -186,7 +186,7 @@ def main():
     loc = os.getcwd()
     print('Using', acct, 'to find', league, division)
     print()
-    """ 
+     
     print(datetime.datetime.now())
     gather_ranks(acct, api_key, league, division, http, loc)
     print()
@@ -198,7 +198,7 @@ def main():
     print(datetime.datetime.now())
     gather_masteries(acct, api_key, league, division, http, loc)
     print()
-
+    """
     print(datetime.datetime.now())
     gather_matches(acct, api_key, league, division, http, loc)
     print()    
