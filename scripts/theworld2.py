@@ -144,9 +144,9 @@ def gather_matches(acct, api_key, league, division, http, loc, region):
         r = http.request('GET', search + acctid + '?queue=420',
                          headers={'X-Riot-Token': api_key})
         m_list = pd.read_json(r.data)[0:8]
-        m_list.to_csv(dest, mode='a+', index=False)
+        m_list = pd.DataFrame(m_list['matches']).transpose()
+        m_list.to_csv(dest, mode='a+', index=False, header=False)
         time.sleep(wait_time)
-        return m_list
 
     summoners['accountId'].apply(match_search)
     print('Match list gathered! Data saved.')
@@ -163,7 +163,16 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
         '_MATCHES_' + acct + '.csv'
     dest = '../data/' + region + '_' + league + \
            division + '_MATCHINFO_' + acct + '.csv'
-    summoners = resume(target, dest)
+
+    def clean(row):
+        if '0' in row.values or 0 in row.values:
+            return np.nan
+
+        def extract(col):
+            return ast.literal_eval(col[0])['gameId']
+        return row.apply(extract)
+
+    summoners = pd.read_csv(target).apply(clean, axis=1)
 
     def match_fill(summoner):
         """
@@ -173,8 +182,7 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
             """
             Helper method to match_fill. Makes the requests for each match
             """
-            gid = ast.literal_eval(match)['gameId']
-            r = http.request('GET', search + str(gid),
+            r = http.request('GET', search + str(match),
                              headers={'X-Riot-Token': api_key})
             time.sleep(wait_time)
             return json.loads(r.data)
