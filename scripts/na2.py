@@ -32,7 +32,6 @@ def gather_ranks(acct, api_key, league, division, http, loc):
 
         if (len(df) > 0):
             all_sums = all_sums.append(df['summonerId'], ignore_index=True)
-            #print('Added page ' + str(page))
             time.sleep(wait_time)
         else:
             pages_left = False
@@ -61,7 +60,6 @@ def gather_sums(acct, api_key, league, division, http, loc):
         """
         r = http.request('GET', search + sumid,
                          headers={'X-Riot-Token': api_key})
-        #print('Added summoner ' + sumid)
         time.sleep(wait_time)
         return pd.read_json(r.data, typ='series')
 
@@ -80,13 +78,13 @@ def gather_masteries(acct, api_key, league, division, http, loc):
     search = 'https://na1.api.riotgames.com/lol/champion-mastery/v4/' + \
              'champion-masteries/by-summoner/'
     summoners = pd.read_csv(target)
+
     def masteries_search(sumid):
         """
         Makes requests for gather_masteries
         """
         r = http.request('GET', search + str(sumid),
                          headers={'X-Riot-Token': api_key})
-        #print('Found masteries for', sumid)
         time.sleep(wait_time)
 
         result = pd.read_json(r.data, typ='series')[0:5]
@@ -97,8 +95,6 @@ def gather_masteries(acct, api_key, league, division, http, loc):
         return result
 
     m = summoners['id'].apply(masteries_search)
-    #summoners = summoners.assign(c1=m[0], c2=m[1], c3=m[2],
-    #                             c4=m[3], c5=m[4])
     summoners['c1'] = m[0]
     summoners['c2'] = m[1]
     summoners['c3'] = m[2]
@@ -129,7 +125,6 @@ def gather_matches(acct, api_key, league, division, http, loc):
                          headers={'X-Riot-Token': api_key})
         m_list = pd.read_json(r.data)[0:8]
         m_list = m_list['matches']
-        #print('Added matches for ' + acctid)
         time.sleep(wait_time)
         return m_list
 
@@ -180,9 +175,6 @@ def fill_matches(acct, api_key, league, division, http, loc):
         return summoner.apply(match_grab)
 
     match_details = summoners.loc[:, mask].apply(match_fill, axis=1)
-    #match_details.columns += '_info'
-    #summoners = summoners.merge(match_details,
-    #                            left_index=True, right_index=True)
 
     summoners['m1'] = match_details['m1']
     summoners['m2'] = match_details['m2']
@@ -209,7 +201,7 @@ def main():
     loc = os.getcwd()
     print('Using', acct, 'to find', league, division)
     print()
-    """     
+    """
     print(datetime.datetime.now())
     gather_ranks(acct, api_key, league, division, http, loc)
     print()
@@ -217,27 +209,21 @@ def main():
     print(datetime.datetime.now())
     gather_sums(acct, api_key, league, division, http, loc)
     print()
- 
+
     print(datetime.datetime.now())
     gather_masteries(acct, api_key, league, division, http, loc)
     print()
-    """    
+    """
     print(datetime.datetime.now())
     gather_matches(acct, api_key, league, division, http, loc)
-    print()    
-   
+    print()
+
     print(datetime.datetime.now())
     fill_matches(acct, api_key, league, division, http, loc)
     print()
 
     print('All done!')
 
+
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
