@@ -3,7 +3,9 @@ import certifi
 import time
 import os
 import json
-import datetime
+import pytz
+from datetime import datetime
+from pytz import timezone
 import numpy as np
 import pandas as pd
 
@@ -210,26 +212,30 @@ def main():
     http = urllib3.PoolManager(cert_reqs='CERT_REQUIRED',
                                ca_certs=certifi.where())
     loc = os.getcwd()
+
+    date_format = '%m/%d/%Y %H:%M:%S %Z'
+    date = datetime.now(tz=pytz.utc).astimezone(timezone('US/Pacific'))
+
     print('Using', acct, 'to find', league, division)
     print()
 
-    print(datetime.datetime.now())
+    print(date.strftime(date_format))
     gather_ranks(acct, api_key, league, division, http, loc, region)
     print()
 
-    print(datetime.datetime.now())
+    print(date.strftime(date_format))
     gather_sums(acct, api_key, league, division, http, loc, region)
     print()
 
-    print(datetime.datetime.now())
+    print(date.strftime(date_format))
     gather_masteries(acct, api_key, league, division, http, loc, region)
     print()
 
-    print(datetime.datetime.now())
+    print(date.strftime(date_format))
     gather_matches(acct, api_key, league, division, http, loc, region)
     print()
 
-    print(datetime.datetime.now())
+    print(date.strftime(date_format))
     fill_matches(acct, api_key, league, division, http, loc, region)
     print()
 
