@@ -126,7 +126,7 @@ def gather_matches(acct, api_key, league, division, http, loc, region):
     search = 'https://' + region + '.api.riotgames.com' + \
              '/lol/match/v4/matchlists/by-account/'
     target = '../data/' + league + '/' + region + '_' + league + \
-             division + '_SUMS_' + acct + '.csv'
+             division + '_MASTERIES_' + acct + '.csv'
     dest = '../data/' + league + '/' + region + '_' + league + \
            division + '_MATCHES_' + acct + '.csv'
     summoners = pd.read_csv(target)
@@ -143,7 +143,7 @@ def gather_matches(acct, api_key, league, division, http, loc, region):
             print('ERROR: status message', end='')
             print(r.data)
             print('Attempting to search again with same API Key')
-            time.sleep(time.sleep + 0.5)
+            time.sleep(wait_time + 0.5)
             return match_search(acctid)
 
         m_list = m_list['matches']
@@ -166,7 +166,7 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
     mask = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8']
     print('Filling matches!')
     target = '../data/' + league + '/' + region + '_' + region + '_' + \
-             league + division + '_MATCHINFO_' + acct + '.csv'
+             league + division + '_MATCHES_' + acct + '.csv'
     dest = '../data/' + league + '/' + region + '_' + league + \
            division + '_MATCHINFO_' + acct + '.csv'
 
@@ -188,7 +188,7 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
                 print('Unwanted response: ', end='')
                 print(r.data)
                 print('Attempting to search again with same API Key')
-                time.sleep(time.sleep + 0.5)
+                time.sleep(wait_time + 0.5)
                 return match_grab(match)
 
             return json.loads(r.data)
