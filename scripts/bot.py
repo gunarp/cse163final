@@ -136,7 +136,7 @@ def gather_matches(acct, api_key, league, division, http, loc, region):
         """
         Gathers a match list
         """
-        r = http.request('GET', search + acctid + '?queue=420',
+        r = http.request('GET', search + str(acctid) + '?queue=420',
                          headers={'X-Riot-Token': api_key})
         m_list = pd.read_json(r.data)[0:8]
 
