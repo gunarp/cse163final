@@ -40,7 +40,8 @@ def gather_ranks(acct, api_key, league, division, http, loc, region):
                 pages_left = False
                 break
             page += 1
-        sample = all_sums.sample(frac=0.1)
+        bot = all_sums.iloc[:len(all_sums.index)]
+        sample = bot.sample(frac=0.1)
         sample.to_csv(dest, header=False, index=False)
     print('Data for', league, division, 'Gathered by', acct)
     print('Data located @ ', dest)
@@ -168,7 +169,7 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
     target = '../data/' + league + '/' + region + '_' + region + '_' + \
              league + division + '_MATCHINFO_' + acct + '.csv'
     dest = '../data/' + league + '/' + region + '_' + league + \
-           division + '_MATCHINFO_' + acct + '.csv'
+           division + '_MATCHINFO_' + acct + '_bot.csv'
 
     summoners = pd.read_csv(target)
 
@@ -201,7 +202,7 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
 
 
 def main():
-    print('Welcome to the crazy data gather party')
+    print('Welcome to rock BOT-tom')
     acct = input('Enter your username: ')
     api_key = input('Enter API Key:  ')
     league = input('Enter League: ').upper()

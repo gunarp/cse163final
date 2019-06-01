@@ -8,7 +8,7 @@ import datetime
 import numpy as np
 import pandas as pd
 
-wait_time = 1.23
+wait_time = 1.25
 
 
 def gather_ranks(acct, api_key, league, division, http, loc):
