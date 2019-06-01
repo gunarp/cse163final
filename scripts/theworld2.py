@@ -76,7 +76,7 @@ def gather_sums(acct, api_key, league, division, http, loc, region):
             """
             r = http.request('GET', search + sumid,
                              headers={'X-Riot-Token': api_key})
-            if 'status' in r.data:
+            if 'status' in str(r.data):
                 print('ERROR: status message', end='')
                 print(r.data)
                 print('Attempting to search again with same API Key')
@@ -196,7 +196,7 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
                              headers={'X-Riot-Token': api_key})
             time.sleep(wait_time)
 
-            if 'status' in r.data:
+            if 'status' in str(r.data):
                 print('Unwanted response: ', end='')
                 print(r.data)
                 print('Attempting to search again with same API Key')
