@@ -34,6 +34,11 @@ def gather_ranks(acct, api_key, league, division, http, loc, region):
                                    headers={'X-Riot-Token': api_key})
             df = pd.read_json(request.data)
 
+            if 'status' in df.columns:
+                request = http.request('GET', tier + str(page),
+                                       headers={'X-Riot-Token': api_key})
+                df = pd.read_json(request.data)
+
             if (len(df) > 0):
                 all_sums = all_sums.append(df['summonerId'], ignore_index=True)
                 # print('Added page ' + str(page))
@@ -62,7 +67,7 @@ def gather_sums(acct, api_key, league, division, http, loc, region):
 
     if dest not in os.listdir('../data/' + league):
         dest = '../data/' + league + '/' + dest
-        data = pd.read_csv(target, squeeze=True, header=None)
+        data = pd.read_csv(target, squeeze=True, header=None).dropna()
 
         def sum_search(sumid):
             """
@@ -71,7 +76,12 @@ def gather_sums(acct, api_key, league, division, http, loc, region):
             """
             r = http.request('GET', search + sumid,
                              headers={'X-Riot-Token': api_key})
-            # print('Added summoner ' + sumid)
+            if 'status' in r.data:
+                print('ERROR: status message', end='')
+                print(r.data)
+                print('Attempting to search again with same API Key')
+                time.sleep(wait_time + 0.5)
+                return sum_search(sumid)
             time.sleep(wait_time)
             return pd.read_json(r.data, typ='series')
 
@@ -93,7 +103,7 @@ def gather_masteries(acct, api_key, league, division, http, loc, region):
              'champion-masteries/by-summoner/'
 
     if dest not in os.listdir('../data/' + league):
-        summoners = pd.read_csv(target)
+        summoners = pd.read_csv(target).dropna()
         dest = '../data/' + league + '/' + dest
 
         def masteries_search(sumid):
@@ -131,7 +141,7 @@ def gather_matches(acct, api_key, league, division, http, loc, region):
              division + '_MASTERIES_' + acct + '.csv'
     dest = '../data/' + league + '/' + region + '_' + league + \
            division + '_MATCHES_' + acct + '.csv'
-    summoners = pd.read_csv(target)
+    summoners = pd.read_csv(target).dropna()
 
     def match_search(acctid):
         """
@@ -172,7 +182,7 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
     dest = '../data/' + league + '/' + region + '_' + league + \
            division + '_MATCHINFO_' + acct + '.csv'
 
-    summoners = pd.read_csv(target)
+    summoners = pd.read_csv(target).dropna()
 
     def match_fill(summoner):
         """
