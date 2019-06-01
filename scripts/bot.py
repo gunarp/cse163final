@@ -40,7 +40,7 @@ def gather_ranks(acct, api_key, league, division, http, loc, region):
                 pages_left = False
                 break
             page += 1
-        bot = all_sums.iloc[:len(all_sums.index)]
+        bot = all_sums.iloc[:len(all_sums.index)//2]
         sample = bot.sample(frac=0.1)
         sample.to_csv(dest, header=False, index=False)
     print('Data for', league, division, 'Gathered by', acct)

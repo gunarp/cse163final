@@ -38,9 +38,8 @@ def gather_ranks(acct, api_key, league, division, http, loc, region):
                 time.sleep(wait_time)
             else:
                 pages_left = False
-                break
             page += 1
-        top = all_sums.iloc[len(all_sums.index):]
+        top = all_sums.iloc[len(all_sums.index)//2:]
         sample = top.sample(frac=0.1)
         sample.to_csv(dest, header=False, index=False)
     print('Data for', league, division, 'Gathered by', acct)
