@@ -4,7 +4,6 @@ import time
 import os
 import json
 import pytz
-import ast
 from datetime import datetime
 from pytz import timezone
 import numpy as np
@@ -211,7 +210,8 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
             """
             Helper method to match_fill. Makes the requests for each match
             """
-            match = ast.literal_eval(match)
+            match = match.replace('\'', '\"')
+            match = json.loads(match)
             match = match['gameId']
             r = http.request('GET', search + str(match),
                              headers={'X-Riot-Token': api_key})
