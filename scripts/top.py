@@ -225,7 +225,9 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
 
             return json.loads(r.data)
 
-        summoner.apply(match_grab).to_csv(dest, index=False, mode='a+')
+        summoner = summoner.apply(match_grab)
+        pd.DataFrame(summoner).transpose().to_csv(dest, mode='a+',
+                                                  index=False, header=False)
 
     summoners.loc[:, mask].apply(match_fill, axis=1)
 
