@@ -167,7 +167,6 @@ def gather_matches(acct, api_key, league, division, http, loc, region):
             m_list = m_list['matches']
             time.sleep(wait_time)
             return m_list
-        print(summoners)
         matches = summoners['accountId'].apply(match_search)
         for i in range(8):
             summoners['m' + str(i+1)] = matches[i]
