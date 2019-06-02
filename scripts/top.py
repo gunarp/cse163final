@@ -85,7 +85,7 @@ def gather_sums(acct, api_key, league, division, http, loc, region):
                 time.sleep(wait_time + 0.5)
                 return sum_search(sumid)
             time.sleep(wait_time)
-            return pd.read_json(r.data, typ='series').drop('status', axis=1)
+            return pd.read_json(r.data, typ='series')
 
         sums_info = data.apply(sum_search)
         sums_info.to_csv(dest, index=False)
