@@ -84,7 +84,7 @@ def gather_sums(acct, api_key, league, division, http, loc, region):
                 time.sleep(wait_time + 0.5)
                 return sum_search(sumid)
             time.sleep(wait_time)
-            return pd.read_json(r.data, typ='series')
+            return pd.read_json(r.data, typ='series').drop('status', axis=1)
 
         sums_info = data.apply(sum_search)
         sums_info.to_csv(dest, index=False)
@@ -141,7 +141,10 @@ def gather_matches(acct, api_key, league, division, http, loc, region):
     target = '../data/' + league + '/' + region + '_' + league + \
              division + '_MASTERIES_' + acct + '.csv'
     dest = region + '_' + league + division + '_MATCHES_' + acct + '.csv'
-    summoners = pd.read_csv(target).dropna()
+    summoners = pd.read_csv(target)
+    if 'status' in summoners.columns:
+        summoners = summoners.drop('status', axis=1).dropna()
+    summoners = summoners.dropna()
 
     if dest not in os.listdir('../data/' + league):
         dest = '../data/' + league + '/' + dest
@@ -185,8 +188,10 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
              league + division + '_MATCHES_' + acct + '.csv'
     dest = '../data/' + league + '/' + region + '_' + league + \
            division + '_MATCHINFO_' + acct + '.csv'
-
-    summoners = pd.read_csv(target).dropna()
+    summoners = pd.read_csv(target)
+    if 'status' in summoners.columns:
+        summoners = summoners.drop('status', axis=1).dropna()
+    summoners = summoners.dropna()
 
     def match_fill(summoner):
         """

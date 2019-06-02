@@ -140,7 +140,7 @@ def gather_matches(acct, api_key, league, division, http, loc, region):
     target = '../data/' + league + '/' + region + '_' + league + \
              division + '_MASTERIES_' + acct + '.csv'
     dest = region + '_' + league + division + '_MATCHES_' + acct + '.csv'
-    summoners = pd.read_csv(target).dropna()
+    summoners = pd.read_csv(target).drop('status', axis=1).dropna()
 
     if dest not in os.listdir('../data/' + league):
         dest = '../data/' + league + '/' + dest
