@@ -183,7 +183,7 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
     search = 'https://' + region + '.api.riotgames.com/lol/match/v4/matches/'
     mask = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8']
     print('Filling matches!')
-    target = '../data/' + league + '/' + region + '_' + region + '_' + \
+    target = '../data/' + league + '/' + region + '_' + \
              league + division + '_MATCHES_' + acct + '.csv'
     dest = '../data/' + league + '/' + region + '_' + league + \
            division + '_MATCHINFO_' + acct + '.csv'
