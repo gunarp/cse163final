@@ -191,10 +191,10 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
            division + '_MATCHINFO_' + acct + '.csv'
 
     def resume(target):
-        print('resuming work!')
         d = region + '_' + league + division + '_MATCHINFO_' + acct + '.csv'
         if d not in os.listdir('../data/' + league):
             return pd.read_csv(target)
+        print('resuming work!')
         done = pd.read_csv(dest).shape[0]
         return pd.read_csv(target).iloc[done:]
 
