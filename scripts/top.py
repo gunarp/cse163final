@@ -188,7 +188,15 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
              league + division + '_MATCHES_' + acct + '.csv'
     dest = '../data/' + league + '/' + region + '_' + league + \
            division + '_MATCHINFO_' + acct + '.csv'
-    summoners = pd.read_csv(target)
+
+    def resume(target):
+        d = region + '_' + league + division + '_MATCHINFO_' + acct + '.csv'
+        if d not in os.listdir(target):
+            return pd.read_csv(target)
+        done = pd.read_csv(dest)
+        return pd.read_csv(target).iloc[done:]
+
+    summoners = resume(target)
     if 'status' in summoners.columns:
         summoners = summoners.drop('status', axis=1).dropna()
     summoners = summoners.dropna()
