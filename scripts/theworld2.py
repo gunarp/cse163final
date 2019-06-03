@@ -34,6 +34,11 @@ def gather_ranks(acct, api_key, league, division, http, loc, region):
                                    headers={'X-Riot-Token': api_key})
             df = pd.read_json(request.data)
 
+            if 'status' in df.columns:
+                request = http.request('GET', tier + str(page),
+                                       headers={'X-Riot-Token': api_key})
+                df = pd.read_json(request.data)
+
             if (len(df) > 0):
                 all_sums = all_sums.append(df['summonerId'], ignore_index=True)
                 # print('Added page ' + str(page))
@@ -62,7 +67,7 @@ def gather_sums(acct, api_key, league, division, http, loc, region):
 
     if dest not in os.listdir('../data/' + league):
         dest = '../data/' + league + '/' + dest
-        data = pd.read_csv(target, squeeze=True, header=None)
+        data = pd.read_csv(target, squeeze=True, header=None).dropna()
 
         def sum_search(sumid):
             """
@@ -71,7 +76,12 @@ def gather_sums(acct, api_key, league, division, http, loc, region):
             """
             r = http.request('GET', search + sumid,
                              headers={'X-Riot-Token': api_key})
-            # print('Added summoner ' + sumid)
+            if 'status' in str(r.data):
+                print('ERROR: status message', end='')
+                print(r.data)
+                print('Attempting to search again with same API Key')
+                time.sleep(wait_time + 0.5)
+                return sum_search(sumid)
             time.sleep(wait_time)
             return pd.read_json(r.data, typ='series')
 
@@ -93,7 +103,7 @@ def gather_masteries(acct, api_key, league, division, http, loc, region):
              'champion-masteries/by-summoner/'
 
     if dest not in os.listdir('../data/' + league):
-        summoners = pd.read_csv(target)
+        summoners = pd.read_csv(target).dropna()
         dest = '../data/' + league + '/' + dest
 
         def masteries_search(sumid):
@@ -129,34 +139,37 @@ def gather_matches(acct, api_key, league, division, http, loc, region):
              '/lol/match/v4/matchlists/by-account/'
     target = '../data/' + league + '/' + region + '_' + league + \
              division + '_MASTERIES_' + acct + '.csv'
-    dest = '../data/' + league + '/' + region + '_' + league + \
-           division + '_MATCHES_' + acct + '.csv'
-    summoners = pd.read_csv(target)
+    dest = region + '_' + league + division + '_MATCHES_' + acct + '.csv'
+    summoners = pd.read_csv(target).drop('status', axis=1).dropna()
 
-    def match_search(acctid):
-        """
-        Gathers a match list
-        """
-        r = http.request('GET', search + str(acctid) + '?queue=420',
-                         headers={'X-Riot-Token': api_key})
-        m_list = pd.read_json(r.data)[0:8]
+    if dest not in os.listdir('../data/' + league):
+        dest = '../data/' + league + '/' + dest
 
-        if 'status' in m_list.columns:
-            print('ERROR: status message', end='')
-            print(r.data)
-            print('Attempting to search again with same API Key')
-            time.sleep(wait_time + 0.5)
-            return match_search(acctid)
+        def match_search(acctid):
+            """
+            Gathers a match list
+            """
+            r = http.request('GET', search + str(acctid) + '?queue=420',
+                             headers={'X-Riot-Token': api_key})
+            m_list = pd.read_json(r.data)[0:8]
 
-        m_list = m_list['matches']
-        time.sleep(wait_time)
-        return m_list
+            if 'status' in m_list.columns:
+                print('ERROR: status message', end='')
+                print(r.data)
+                print('Attempting to search again with same API Key')
+                time.sleep(wait_time + 0.5)
+                return match_search(acctid)
 
-    matches = summoners['accountId'].apply(match_search)
-    for i in range(8):
-        summoners['m' + str(i+1)] = matches[i]
+            m_list = m_list['matches']
+            time.sleep(wait_time)
+            return m_list
 
-    summoners.to_csv(dest, index=False)
+        matches = summoners['accountId'].apply(match_search)
+        for i in range(8):
+            summoners['m' + str(i+1)] = matches[i]
+
+        summoners.to_csv(dest, index=False)
+
     print('Match list gathered! Data saved.')
 
 
@@ -172,7 +185,7 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
     dest = '../data/' + league + '/' + region + '_' + league + \
            division + '_MATCHINFO_' + acct + '.csv'
 
-    summoners = pd.read_csv(target)
+    summoners = pd.read_csv(target).dropna()
 
     def match_fill(summoner):
         """
@@ -186,7 +199,7 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
                              headers={'X-Riot-Token': api_key})
             time.sleep(wait_time)
 
-            if 'status' in r.data:
+            if 'status' in str(r.data):
                 print('Unwanted response: ', end='')
                 print(r.data)
                 print('Attempting to search again with same API Key')
