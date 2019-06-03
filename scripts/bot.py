@@ -217,7 +217,7 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
                              headers={'X-Riot-Token': api_key})
             time.sleep(wait_time)
 
-            if 'status' in str(r.data):
+            if '"status"' in str(r.data):
                 print('Unwanted response: ', end='')
                 print(r.data)
                 print('Attempting to search again with same API Key')
