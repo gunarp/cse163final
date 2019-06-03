@@ -210,10 +210,10 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
             """
             Helper method to match_fill. Makes the requests for each match
             """
-            match = match.replace('\'', '\"')
-            match = json.loads(match)
-            match = match['gameId']
-            r = http.request('GET', search + str(match),
+            m = match.replace('\'', '\"')
+            m = json.loads(m)
+            m = m['gameId']
+            r = http.request('GET', search + str(m),
                              headers={'X-Riot-Token': api_key})
             time.sleep(wait_time)
 
