@@ -140,7 +140,10 @@ def gather_matches(acct, api_key, league, division, http, loc, region):
     target = '../data/' + league + '/' + region + '_' + league + \
              division + '_MASTERIES_' + acct + '.csv'
     dest = region + '_' + league + division + '_MATCHES_' + acct + '.csv'
-    summoners = pd.read_csv(target).drop('status', axis=1).dropna()
+    summoners = pd.read_csv(target)
+    if 'status' in summoners.columns:
+        summoners = summoners.drop('status', axis=1).dropna()
+    summoners = summoners.dropna()
 
     if dest not in os.listdir('../data/' + league):
         dest = '../data/' + league + '/' + dest
@@ -180,12 +183,23 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
     search = 'https://' + region + '.api.riotgames.com/lol/match/v4/matches/'
     mask = ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8']
     print('Filling matches!')
-    target = '../data/' + league + '/' + region + '_' + region + '_' + \
+    target = '../data/' + league + '/' + region + '_' + \
              league + division + '_MATCHES_' + acct + '.csv'
     dest = '../data/' + league + '/' + region + '_' + league + \
            division + '_MATCHINFO_' + acct + '.csv'
 
-    summoners = pd.read_csv(target).dropna()
+    def resume(target):
+        d = region + '_' + league + division + '_MATCHINFO_' + acct + '.csv'
+        if d not in os.listdir('../data/' + league):
+            return pd.read_csv(target)
+        print('resuming work!')
+        done = pd.read_csv(dest).shape[0]
+        return pd.read_csv(target).iloc[done:]
+
+    summoners = resume(target)
+    if 'status' in summoners.columns:
+        summoners = summoners.drop('status', axis=1).dropna()
+    summoners = summoners.dropna()
 
     def match_fill(summoner):
         """
@@ -195,11 +209,18 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
             """
             Helper method to match_fill. Makes the requests for each match
             """
-            r = http.request('GET', search + str(match),
+            m = match.replace('\'', '\"')
+            m = json.loads(m)
+            m = m['gameId']
+            r = http.request('GET', search + str(m),
                              headers={'X-Riot-Token': api_key})
             time.sleep(wait_time)
 
-            if 'status' in str(r.data):
+            if '"status_code":404' in str(r.data):
+                print('Match data not found (likely expired)')
+                return np.nan
+
+            if '"status"' in str(r.data):
                 print('Unwanted response: ', end='')
                 print(r.data)
                 print('Attempting to search again with same API Key')
@@ -208,7 +229,9 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
 
             return json.loads(r.data)
 
-        summoner.apply(match_grab).to_csv(dest, index=False, mode='a+')
+        summoner = summoner.apply(match_grab)
+        pd.DataFrame(summoner).transpose().to_csv(dest, mode='a+',
+                                                  index=False, header=False)
 
     summoners.loc[:, mask].apply(match_fill, axis=1)
 
