@@ -1,4 +1,4 @@
-# Created by https://www.gitignore.io/api/jupyternotebook
+﻿# Created by https://www.gitignore.io/api/jupyternotebook
 # Edit at https://www.gitignore.io/?templates=jupyternotebook
 
 ### JupyterNotebook ###
@@ -160,3 +160,5 @@ dmypy.json
 .history
 
 # End of https://www.gitignore.io/api/visualstudiocode
+
+data/
