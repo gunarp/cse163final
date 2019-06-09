@@ -217,11 +217,10 @@ def fill_matches(acct, api_key, league, division, http, loc, region):
                              headers={'X-Riot-Token': api_key})
             time.sleep(wait_time)
 
-            if '"status_code":404' in str(r.data):
-                print('Match data not found (likely expired)')
-                return np.nan
-
             if '"status"' in str(r.data):
+                if '404' in str(r.data):
+                    print('Match data not found (likely expired)')
+                    return np.nan
                 print('Unwanted response: ', end='')
                 print(r.data)
                 print('Attempting to search again with same API Key')
