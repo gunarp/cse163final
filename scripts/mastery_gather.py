@@ -18,6 +18,7 @@ def fill_params(target):
     league, division, region = target
     loc = '../data/' + league + '/' + region + '_' + league + division + '.csv'
     data = pd.read_csv(loc)
+    data = data[['c' + str(i) for i in range(1, 6)]]
     data = data.dropna()
     champions = pd.read_json('../champ.json')['data']
     return(data, champions)
@@ -25,26 +26,26 @@ def fill_params(target):
 
 def get_top_champs(data=None, champions=None, target=None):
     """
-    Translates champion mastery json strings into champion names.
-    Returns a n x 5 dataframe where n is the number of summoners in the
-    original dataset.
-    The dataframe contains the champion names of each summoner's top five
-    champion masteries.
+    Returns a series which records the number of summoners
+    in given dataset who 'main' (have most mastery points)
+    any champion.
     """
     if target is not None:
         data, champions = fill_params(target)
 
+    data = data['c1']
     c = pd.DataFrame(champions.apply(lambda x: x['key']))
     c['data'] = np.int64(c['data'])
     c = c.reset_index()
 
-    def extract_champ(data):
-        data = pd.DataFrame(data.apply(extract_feature, feature='championId'))
-        data.columns = ['id']
-        data = data.merge(c, left_on='id', right_on='data')['index']
-        return data
+    def count(data):
+        return data.value_counts()
 
-    return data[['c' + str(i) for i in range(1, 6)]].apply(extract_champ)
+    data = pd.DataFrame(data.apply(extract_feature, feature='championId'))
+    data.columns = ['id']
+    data = data.merge(c, left_on='id', right_on='data')['index']
+
+    return data.value_counts().fillna(value=0).sort_index()
 
 
 def get_roles(data=None, champions=None, target=None):
@@ -69,17 +70,17 @@ def get_roles(data=None, champions=None, target=None):
         data = data.merge(c, left_on='id', right_on='id')['tags']
         return data
 
-    data = data[['c' + str(i) for i in range(1, 6)]].apply(extract_role)
+    data = data.apply(extract_role)
     all_roles = {}
     main_roles = {}
 
-    def aggregate_all(place):
+    def aggregate_all(col):
         def tally_up(tags):
             for tag in tags:
                 if tag not in all_roles:
                     all_roles[tag] = 0
                 all_roles[tag] += 1
-        place.apply(tally_up)
+        col.apply(tally_up)
 
     def aggregate_main(tags):
         for tag in tags:
