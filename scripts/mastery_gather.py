@@ -46,9 +46,6 @@ def get_top_champs(data=None, champions=None, target=None):
     c['data'] = np.int64(c['data'])
     c = c.reset_index()
 
-    def count(data):
-        return data.value_counts()
-
     data = pd.DataFrame(data.apply(extract_feature, feature='championId'))
     data.columns = ['id']
     data = data.merge(c, left_on='id', right_on='data')['index']
