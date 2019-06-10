@@ -118,13 +118,43 @@ def produce_champ_pop_plot(pop_freq, purpose, dest):
     pop_champs.savefig('../img/pop_champs_' + dest + '.png')
 
 
+def produce_top_bot_plot(mains):
+    """
+    Helper function for plot_na_champs, actually produces a plot
+    """
+    avg = mains.mean(axis=1)
+    top_bot, axes = plt.subplots(2, 5, figsize=(15, 6))
+
+    bot = avg.sort_values().head(5)
+    top = avg.sort_values(ascending=False).head(5)
+    to_plot = (top, bot)
+    for row, li in enumerate(to_plot):
+        for col, champ in enumerate(li.index):
+            ax = axes[row, col]
+            r = requests.get('http://ddragon.leagueoflegends.com' +
+                             '/cdn/9.10.1/img/champion/' + champ + '.png')
+            f = int(li[champ] * 100) / 100
+            ax.imshow(Image.open(BytesIO(r.content)), interpolation='none')
+            ax.set_title(champ + ', ' + str(f) + '%', size=16)
+            ax.set_xticks([])
+            ax.set_yticks([])
+    axes[0, 0].set_ylabel('Top 5', rotation=0, labelpad=50, size=20)
+    axes[1, 0].set_ylabel('Bottom 5', rotation=0, labelpad=50, size=20)
+
+    top_bot.suptitle('Over/Underrepresented Champions across all ranks in NA',
+                     size=20)
+    top_bot.savefig('../img/top_bot_na.png')
+
+
 def plot_na_champs():
     """
-    Saves two figures as images.
-    First figure shows the proportion of players who main
+    Saves three figures as images.
+    First figure shows a list of the most and least popular champions
+    among all ranks in NA by percent of players who main them.
+    Second figure shows the proportion of players who main
     beginner champions (who can be obtained for free after
     finishing the game tutorial) in each rank.
-    Second figure shows a list of the most popular champions
+    Third figure shows a list of the most popular champions
     among all ranks in NA. Popularity was determined by the number
     of times the champion was among the top among the top five most mained
     champions by mastery in each rank.
@@ -146,9 +176,12 @@ def plot_na_champs():
 
     mains.apply(record_pop_freq)
     mains.columns = [i for i in range(1, len(leagues) + 1)]
-    mains = mains.transpose()
 
+    produce_top_bot_plot(mains)
+
+    mains = mains.transpose()
     produce_champ_rank_plot(mains, leagues)
+
     produce_champ_pop_plot(pop_freq, 'All Ranks in NA', 'na')
 
 
@@ -231,8 +264,8 @@ def plot_region_champs():
 
 def main():
     # plot_na_roles()
-    # plot_na_champs()
-    plot_region_roles()
+    plot_na_champs()
+    # plot_region_roles()
     # plot_region_champs()
 
 
