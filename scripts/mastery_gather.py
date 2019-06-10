@@ -2,6 +2,14 @@ import pandas as pd
 import numpy as np
 import ast
 
+"""
+mastery_gather extracts the relevant information from the champion
+mastery columns of the collected datasets.
+This information includes champion name and champion role.
+The purpose of gathering this information is to answer the questions
+on which champions and roles do best for climbing the ranks.
+"""
+
 
 def extract_feature(data, feature):
     """
